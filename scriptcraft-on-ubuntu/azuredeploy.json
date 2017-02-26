@@ -4,21 +4,21 @@
     "parameters": {
         "minecraftUser": {
             "type": "string",
-            "defaultValue": "jackson2009",
+            "defaultValue": "",
             "metadata": {
                 "description": "Your Minecraft user name"
             }
         },
         "adminUsername": {
             "type": "string",
-            "defualtValue": "jmitchell",
+            "defualtValue": "",
             "metadata": {
                 "description": "Admin user name you will use to log on to the Virtual Machine."
             }
         },
         "adminPassword": {
             "type": "securestring",
-            "defaultValue": "jackson14023",
+            "defaultValue": "",
             "metadata": {
                 "description": "Password for the admin user name."
             }
