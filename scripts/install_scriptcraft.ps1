@@ -10,17 +10,22 @@ $minecraftServerPath = $env:USERPROFILE + "\minecraft_server\"                  
 
 # install chocolatey to make my life easier
 (iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')))>$null 2>&1
+Write-Output "Chocolatey Installed!"
 
 # download and install Minecraft client because we need this for scriptcraft (version 1.8 only supported for now)
 $filePath = $env:USERPROFILE + "\Downloads\" + $clientExe
+Write-Output "Downloading Minecraft MSI"
 $webclient.DownloadFile($clientURL,$filePath)
-# install Minecraft client 
+# install Minecraft client
+Write-Output "Installing Minecraft!" 
 msiexec /quiet /i $filePath
 
 # install java via chocolatey instead of installing from download.
+Write-Output "Installing JRE!"
 choco install -y -force javaruntime
 
 # build out Path Vars
+Write-Output "Building Path Variables:"
 $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") # Reload PATH from Java Install in current session
 $javaCommand = get-command java.exe
 $javaPath = $javaCommand.Name
@@ -28,6 +33,7 @@ $jarPath = $minecraftServerPath + $minecraftJar
 
 # download Minecraft server
 mkdir $minecraftServerPath
+Write-Output "Download Minecraft Server:"
 $url = "https://s3.amazonaws.com/Minecraft.Download/versions/" + $minecraftVersion + "/" + $minecraftJar
 $webclient.DownloadFile($url,$jarPath)
 
@@ -42,4 +48,5 @@ out-file -filepath .\ops.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\usercache.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\whitelist.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\eula.txt -encoding ascii -inputobject "eula=true`n" 
+Write-Output "Launching Minecraft!"
 iex "$javaPath -Xmx2048M -Xms2048M -jar $jarPath nogui" #Start Minecraft Server
