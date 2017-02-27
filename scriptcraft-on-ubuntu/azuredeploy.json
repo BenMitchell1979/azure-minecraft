@@ -213,7 +213,7 @@
                 "typeHandlerVersion": "1.2",
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scriptcraft-on-ubuntu/install_scriptcraft.sh"
+                        "https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scripts/install_scriptcraft.sh"
                     ],
                     "commandToExecute": "[concat('bash install_scriptcraft.sh ', parameters('minecraftUser'))]"
                 }
