@@ -1,52 +1,45 @@
 # Script to download and install Minecraft server on a clean Windows machine
-# This script does the following:
-#   - Install chocolatey
-#   - Download and Install Minecraft client
-#   - Install Java runtime
-#   - Download Minecraft server JAR
-#   - Start Minecraft server (future version will create a Windows service)
+# Call w/ '(iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scripts/install_scriptcraft.ps1')))>$null 2>&1'
 
-$minecraftVersion = "1.8.8"
+# Setup Variables for script
+$minecraftVersion = "1.8.8" # Required for Scriptcraft to work (does not support newer builds)
 $minecraftJar = "minecraft_server." + $minecraftVersion + ".jar"
-$javaInstaller = "http://javadl.sun.com/webapps/download/AutoDL?BundleId=109717"
-$clientExe = "MinecraftInstaller.msi"
-$clientURL = "https://launcher.mojang.com/download/" + $clientExe
+$clientURL = "https://launcher.mojang.com/download/MinecraftInstaller.msi"       #fetch Minecraft Installer // replace this with Storage Blob link later
 $webclient = New-Object System.Net.WebClient
-$minecraftServerPath = $env:USERPROFILE + "\minecraft_server\"
+$minecraftServerPath = $env:USERPROFILE + "\minecraft_server\"                   # Build out MC Server folder.
 
-# install chocolatey
+# install chocolatey to make my life easier
 (iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')))>$null 2>&1
 
-# download Minecraft client
+# download and install Minecraft client because we need this for scriptcraft (version 1.8 only supported for now)
 $filePath = $env:USERPROFILE + "\Downloads\" + $clientExe
 $webclient.DownloadFile($clientURL,$filePath)
 # install Minecraft client 
 msiexec /quiet /i $filePath
 
-# install java 
+# install java via chocolatey instead of installing from download.
 choco install -y -force javaruntime
 
-# reload PATH
-$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine")
+# build out Path Vars
+$env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") # Reload PATH from Java Install in current session
 $javaCommand = get-command java.exe
 $javaPath = $javaCommand.Name
 $jarPath = $minecraftServerPath + $minecraftJar
 
 # download Minecraft server
-md $minecraftServerPath
+mkdir $minecraftServerPath
 $url = "https://s3.amazonaws.com/Minecraft.Download/versions/" + $minecraftVersion + "/" + $minecraftJar
 $webclient.DownloadFile($url,$jarPath)
 
 # launch Minecraft server for first time
 cd $minecraftServerPath
 
-md logs
-echo $null > server.properties
+mkdir logs
+out-file -filepath .\server.properties -encoding ascii -inputobject ""
 out-file -filepath .\banned-ips.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\banned-players.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\ops.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\usercache.json -encoding ascii -inputobject "[]`n"
 out-file -filepath .\whitelist.json -encoding ascii -inputobject "[]`n"
-
-out-file -filepath .\eula.txt -encoding ascii -inputobject "eula=true`n"
-iex "$javaPath -Xmx1024M -Xms1024M -jar $jarPath nogui"
+out-file -filepath .\eula.txt -encoding ascii -inputobject "eula=true`n" 
+iex "$javaPath -Xmx2048M -Xms2048M -jar $jarPath nogui" #Start Minecraft Server
