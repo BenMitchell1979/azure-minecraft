@@ -4,27 +4,25 @@
     "parameters": {
         "minecraftUser": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Your Minecraft user name"
             }
         },
         "adminUsername": {
             "type": "string",
-            "defualtValue": "",
             "metadata": {
                 "description": "Admin user name you will use to log on to the Virtual Machine."
             }
         },
         "adminPassword": {
             "type": "securestring",
-            "defaultValue": "",
             "metadata": {
                 "description": "Password for the admin user name."
             }
         },
         "dnsNameForPublicIP": {
             "type": "string",
+            "defaultValue": "jdmscriptcraft",
             "metadata": {
                 "description": "Put a unique DNS Name for the Public IP used to access the Virtual Machine."
             }
@@ -43,10 +41,10 @@
         "subnetPrefix": "10.0.0.0/24",
         "storageAccountType": "Standard_LRS",
         "publicIPAddressName": "minecraftpublicip",
-        "publicIPAddressType": "Dynamic",
+        "publicIPAddressType": "Static",
         "ubuntuOSVersion": "16.04-LTS",
         "vmStorageAccountContainerName": "vhds",
-        "vmName": "minecraftvm",
+        "vmName": "scriptcraftvm",
         "vmSize": "Standard_A1",
         "virtualNetworkName": "minecraftvnet",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
@@ -215,7 +213,7 @@
                 "typeHandlerVersion": "1.2",
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/gbowerman/azure-minecraft/master/scriptcraft-on-ubuntu/install_scriptcraft.sh"
+                        "https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scriptcraft-on-ubuntu/install_scriptcraft.sh"
                     ],
                     "commandToExecute": "[concat('bash install_scriptcraft.sh ', parameters('minecraftUser'))]"
                 }
