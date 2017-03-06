@@ -1,6 +1,14 @@
 # Script to download and install Minecraft server on a clean Windows machine
 # Call w/ '(iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scripts/install_scriptcraft.ps1')))>$null 2>&1'
 
+# Pending Items:
+# - Add port rule for Windows Firewall
+# - Deploy Scriptcraft mod
+# - Pull in custom server.properties file vs default
+# - create Minecraft windows service
+
+
+
 # Setup Variables for script
 $minecraftVersion = "1.8.8" # Required for Scriptcraft to work (does not support newer builds)
 $minecraftJar = "minecraft_server." + $minecraftVersion + ".jar"

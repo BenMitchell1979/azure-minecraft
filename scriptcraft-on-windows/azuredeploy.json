@@ -4,25 +4,28 @@
     "parameters": {
         "minecraftUser": {
             "type": "string",
+            "defaultValue": "Jackson_2009",
             "metadata": {
                 "description": "Your Minecraft user name"
             }
         },
         "adminUsername": {
             "type": "string",
+            "defaultValue": "jackson",
             "metadata": {
                 "description": "Admin user name you will use to log on to the Virtual Machine."
             }
         },
         "adminPassword": {
             "type": "securestring",
+            "defaultValue": "Jackson14023!",
             "metadata": {
                 "description": "Password for the admin user name."
             }
         },
         "dnsNameForPublicIP": {
             "type": "string",
-            "defaultValue": "jdmscriptcraft",
+            "defaultValue": "scriptcraftwin",
             "metadata": {
                 "description": "Put a unique DNS Name for the Public IP used to access the Virtual Machine."
             }
@@ -30,23 +33,23 @@
     },
     "variables": {
         "lowerCaseDNSName": "[toLower(parameters('dnsNameForPublicIP'))]",
-        "imagePublisher": "Canonical",
-        "imageOffer": "UbuntuServer",
-        "OSDiskName": "osdiskforlinuxsimple",
+        "imagePublisher": "MicrosoftWindowsServer",
+        "imageOffer": "WindowsServer",
+        "OSDiskName": "scriptcraftwinos",
         "newStorageAccountName": "[concat(variables('lowerCaseDNSName'), 'storage')]",
         "networkSecurityGroupName": "[concat(variables('lowerCaseDNSName'), 'nsg')]",
-        "nicName": "minecraftvmnic",
+        "nicName": "[concat(variables('lowerCaseDNSName'), '-nic')]",
         "addressPrefix": "10.0.0.0/16",
         "subnetName": "subnet",
         "subnetPrefix": "10.0.0.0/24",
         "storageAccountType": "Standard_LRS",
-        "publicIPAddressName": "minecraftpublicip",
+        "publicIPAddressName": "[concat(variables('lowerCaseDNSName'), 'pip')]",
         "publicIPAddressType": "Static",
-        "ubuntuOSVersion": "16.04-LTS",
+        "ubuntuOSVersion": "2016-Datacenter",
         "vmStorageAccountContainerName": "vhds",
-        "vmName": "scriptcraftvm",
-        "vmSize": "Standard_A1",
-        "virtualNetworkName": "minecraftvnet",
+        "vmName": "[concat(variables('lowerCaseDNSName'), '-vm')]",
+        "vmSize": "Standard_A2",
+        "virtualNetworkName": "vnet-scriptcraft",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
         "location": "[resourceGroup().location]"
@@ -67,12 +70,12 @@
             "location": "[variables('location')]",
             "properties": {
                 "securityRules": [{
-                        "name": "ssh",
+                        "name": "RDP",
                         "properties": {
-                            "description": "SSH port",
+                            "description": "RDP port",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "22",
+                            "destinationPortRange": "3389",
                             "sourceAddressPrefix": "Internet",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -172,7 +175,7 @@
                     "vmSize": "[variables('vmSize')]"
                 },
                 "osProfile": {
-                    "computername": "[variables('vmName')]",
+                    "computername": "scriptcraft01",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -201,23 +204,26 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmName'),'/newuserscript')]",
-            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(variables('vmName'),'/scriptcraft-deploy')]",
+            "apiVersion": "2015-06-15",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.OSTCExtensions",
-                "type": "CustomScriptForLinux",
-                "typeHandlerVersion": "1.2",
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.7",
+                "autoUpgradeMinorVersion": false,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scriptcraft-on-ubuntu/install_scriptcraft.sh"
+                        "https://raw.githubusercontent.com/BenMitchell1979/azure-minecraft/master/scripts/install_scriptcraft.ps1"
                     ],
-                    "commandToExecute": "[concat('bash install_scriptcraft.sh ', parameters('minecraftUser'))]"
-                }
+                    "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File install_scriptcraft.ps1"
+                },
+                "ProtectedSettings": {}
             }
         }
+
     ]
 }
